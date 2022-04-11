@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --watch src/** --exec ts-node src/index.ts",
     "build": "rimraf dist && tsc && renamer --find js --replace cjs dist/**",
-    "start": "node dist/index.js"
+    "start": "node dist/index.cjs"
   },
   "author": "Curtion",
   "license": "MIT",
