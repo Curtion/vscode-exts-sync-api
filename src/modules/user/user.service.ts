@@ -1,14 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './dto/user.dto';
+import { UserDTO } from './dto/user.dto';
+import { UserEntity } from './entity/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(UserEntity)
+    private UserRepository: Repository<UserEntity>,
+  ) {}
 
-  register(user: User) {
-    this.userRepo.save(user);
-    return user;
+  async register(user: UserDTO) {
+    const { username } = user;
+
+    const existUser = await this.UserRepository.findOne({
+      where: { username },
+    });
+    if (existUser) {
+      throw new HttpException('用户名已存在', HttpStatus.BAD_REQUEST);
+    }
+    const newUser = this.UserRepository.create(user);
+    return await this.UserRepository.save(newUser);
   }
 }
